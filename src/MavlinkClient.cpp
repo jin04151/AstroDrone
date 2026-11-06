@@ -13,9 +13,21 @@ MavlinkClient::MavlinkClient(
     HealthMonitor& health,
     std::chrono::milliseconds heartbeatTimeout
 )
-    : health_(health),
+    : health_(&health),
       heartbeat_timeout_(heartbeatTimeout),
       transport_(udp_transport_),
+      last_heartbeat_(Clock::now())
+{
+}
+
+
+MavlinkClient::MavlinkClient(
+    IMavlinkTransport& transport,
+    std::chrono::milliseconds heartbeatTimeout
+)
+    : health_(nullptr),
+      heartbeat_timeout_(heartbeatTimeout),
+      transport_(transport),
       last_heartbeat_(Clock::now())
 {
 }
@@ -30,6 +42,8 @@ MavlinkClient::~MavlinkClient() = default;
 
 bool MavlinkClient::openPort(int port)
 {
+    if (&transport_ != &udp_transport_)
+        return false;
     return udp_transport_.openPort(port);
 }
 
@@ -403,8 +417,9 @@ void MavlinkClient::receive()
                         << "\n";
                 }
             }
-
-            health_.processMessage(message);
+            if (health_ != nullptr) {
+                health_->processMessage(message);
+	    }
         }
     }
 }

@@ -11,22 +11,28 @@
 
 class MavlinkClient {
 public:
-    explicit MavlinkClient(
+    // Existing SITL constructor.
+    // Owns and uses the UDP transport.
+    MavlinkClient(
         HealthMonitor& health,
+        std::chrono::milliseconds heartbeatTimeout
+    );
+
+    // External transport constructor.
+    // Used by REAL receive-only application.
+    MavlinkClient(
+        IMavlinkTransport& transport,
         std::chrono::milliseconds heartbeatTimeout
     );
 
     ~MavlinkClient();
 
-    MavlinkClient(
-        const MavlinkClient&
-    ) = delete;
+    MavlinkClient(const MavlinkClient&) = delete;
+    MavlinkClient& operator=(const MavlinkClient&) = delete;
 
-    MavlinkClient& operator=(
-        const MavlinkClient&
-    ) = delete;
-
+    // SITL UDP initialization only.
     bool openPort(int port);
+
     void receive();
 
     bool connected() const;
@@ -54,22 +60,22 @@ public:
     void printAltitudeStatus() const;
 
 private:
-    using Clock =
-        std::chrono::steady_clock;
+    using Clock = std::chrono::steady_clock;
 
     bool sendMessage(
         const mavlink_message_t& message
     );
 
-    HealthMonitor& health_;
+    // SITL uses HealthMonitor.
+    // REAL telemetry-only mode does not own one yet.
+    HealthMonitor* health_ = nullptr;
 
-    std::chrono::milliseconds
-        heartbeat_timeout_;
+    std::chrono::milliseconds heartbeat_timeout_;
 
-    // SITL currently owns a UDP transport.
+    // Existing UDP ownership retained for SITL.
     UdpMavlinkTransport udp_transport_;
 
-    // Raw MAVLink I/O through common interface.
+    // Transport selected by constructor.
     IMavlinkTransport& transport_;
 
     bool sitl_tx_enabled_ = false;
@@ -91,11 +97,8 @@ private:
     double vertical_speed_mps_ = 0.0;
     Clock::time_point last_velocity_{};
 
-    static constexpr int
-        ALTITUDE_TIMEOUT_MS = 5000;
-
-    static constexpr int
-        VELOCITY_TIMEOUT_MS = 3000;
+    static constexpr int ALTITUDE_TIMEOUT_MS = 5000;
+    static constexpr int VELOCITY_TIMEOUT_MS = 3000;
 
     mavlink_status_t parser_status_{};
 };

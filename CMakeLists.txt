@@ -10,7 +10,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 find_package(Threads REQUIRED)
 
 # ========================================
-# Shared transport interface
+# Common transport interface
 # ========================================
 
 add_library(mavlink_transport INTERFACE)
@@ -41,7 +41,7 @@ target_compile_options(mavlink_udp PRIVATE
 )
 
 # ========================================
-# Serial transport - REAL
+# UART transport - REAL
 # ========================================
 
 add_library(mavlink_serial STATIC
@@ -62,7 +62,7 @@ target_compile_options(mavlink_serial PRIVATE
 )
 
 # ========================================
-# Common control modules
+# Shared MAVLink and control modules
 # ========================================
 
 add_library(control_core STATIC
@@ -92,7 +92,7 @@ target_compile_options(control_core PRIVATE
 )
 
 # ========================================
-# SITL executable
+# SITL application
 # ========================================
 
 add_executable(control_sitl
@@ -110,18 +110,15 @@ target_compile_options(control_sitl PRIVATE
 )
 
 # ========================================
-# REAL executable - telemetry only
+# REAL application - receive only
 # ========================================
 
 add_executable(control_real
     apps/real/main.cpp
 )
 
-target_include_directories(control_real SYSTEM PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party
-)
-
 target_link_libraries(control_real PRIVATE
+    control_core
     mavlink_serial
     Threads::Threads
 )
