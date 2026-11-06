@@ -1,0 +1,57 @@
+
+# Build outputs
+build/
+build-*/
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+compile_commands.json
+
+# Executables and object files
+*.o
+*.a
+*.so
+*.out
+*.elf
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Logs and temporary files
+*.log
+logs/
+*.tmp
+*.swp
+*~
+*.bak
+*.bak_*
+*.before_*
+*.orig
+
+# Flight controller state
+eeprom.bin
+*.tlog
+*.bin
+
+# ML model files (manage separately)
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# OS and editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
