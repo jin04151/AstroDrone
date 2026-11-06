@@ -6,10 +6,19 @@
 #include <string>
 #include <sys/types.h>
 
-class SerialMavlinkTransport {
+#include "IMavlinkTransport.hpp"
+
+// Receive-only serial transport.
+//
+// Used for Pixhawk telemetry.
+// No send() override is provided.
+//
+// IMavlinkTransport::send() always returns false.
+class SerialMavlinkTransport final
+    : public IMavlinkTransport {
 public:
     SerialMavlinkTransport() = default;
-    ~SerialMavlinkTransport();
+    ~SerialMavlinkTransport() override;
 
     SerialMavlinkTransport(
         const SerialMavlinkTransport&
@@ -24,14 +33,12 @@ public:
         int baudRate
     );
 
-    // Read-only UART transport.
-    // No flight command transmission API.
     ssize_t receive(
         uint8_t* buffer,
         std::size_t capacity
-    );
+    ) override;
 
-    bool isOpen() const;
+    bool isOpen() const override;
 
 private:
     int fd_ = -1;

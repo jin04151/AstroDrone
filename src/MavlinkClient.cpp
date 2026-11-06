@@ -15,6 +15,7 @@ MavlinkClient::MavlinkClient(
 )
     : health_(health),
       heartbeat_timeout_(heartbeatTimeout),
+      transport_(udp_transport_),
       last_heartbeat_(Clock::now())
 {
 }
@@ -29,7 +30,7 @@ MavlinkClient::~MavlinkClient() = default;
 
 bool MavlinkClient::openPort(int port)
 {
-    return transport_.openPort(port);
+    return udp_transport_.openPort(port);
 }
 
 

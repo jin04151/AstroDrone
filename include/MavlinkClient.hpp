@@ -5,6 +5,7 @@
 #include <cstdint>
 
 #include "HealthMonitor.hpp"
+#include "IMavlinkTransport.hpp"
 #include "UdpMavlinkTransport.hpp"
 #include "mavlink/ardupilotmega/mavlink.h"
 
@@ -39,10 +40,7 @@ public:
     double horizontalSpeedMps() const;
     double verticalSpeedMps() const;
 
-    void enableSitlTransmission(
-        bool enabled
-    );
-
+    void enableSitlTransmission(bool enabled);
     bool flightTxEnabled() const;
 
     bool requestGuided();
@@ -68,9 +66,11 @@ private:
     std::chrono::milliseconds
         heartbeat_timeout_;
 
-    // UDP transport is separated
-    // from MAVLink message processing.
-    UdpMavlinkTransport transport_;
+    // SITL currently owns a UDP transport.
+    UdpMavlinkTransport udp_transport_;
+
+    // Raw MAVLink I/O through common interface.
+    IMavlinkTransport& transport_;
 
     bool sitl_tx_enabled_ = false;
 
