@@ -58,3 +58,30 @@ Thumbs.db
 
 # Runtime safety state
 state/
+
+
+# Vision models
+*.onnx
+*.engine
+*.pt
+*.pth
+*.weights
+
+# Python environment
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# TensorRT build
+drone_vision/tensorrt/build/
+
+# Generated data
+runs/
+datasets/
+*.mp4
+*.avi
+*.tlog
+
+# Local runtime state
+state/
