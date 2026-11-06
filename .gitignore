@@ -55,3 +55,6 @@ eeprom.bin
 Thumbs.db
 .vscode/
 .idea/
+
+# Runtime safety state
+state/

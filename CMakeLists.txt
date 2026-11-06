@@ -1,14 +1,17 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-project(control LANGUAGES CXX)
+project(drone_control LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(control
-    src/main.cpp
+# ========================================
+# Common C++ source files
+# ========================================
+
+set(COMMON_SOURCES
     src/MavlinkClient.cpp
     src/SafetyManager.cpp
     src/MissionManager.cpp
@@ -17,15 +20,53 @@ add_executable(control
     src/FlightPhaseManager.cpp
 )
 
-target_include_directories(control PRIVATE
+# ========================================
+# Common control library
+# ========================================
+
+add_library(control_core STATIC
+    ${COMMON_SOURCES}
+)
+
+target_include_directories(control_core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_include_directories(control SYSTEM PRIVATE
+target_include_directories(control_core SYSTEM PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party
 )
 
-target_compile_options(control PRIVATE
+target_compile_options(control_core PRIVATE
     -Wall
     -Wextra
 )
+
+# ========================================
+# SITL executable
+# ========================================
+
+add_executable(control_sitl
+    apps/sitl/main.cpp
+)
+
+target_link_libraries(control_sitl PRIVATE
+    control_core
+)
+
+target_compile_options(control_sitl PRIVATE
+    -Wall
+    -Wextra
+)
+
+# ========================================
+# REAL executable
+# ========================================
+# Jetson + Pixhawk UART version
+#
+# Not implemented yet.
+# Real flight TX must remain disabled.
+#
+# Future target:
+# add_executable(control_real
+#     apps/real/main.cpp
+# )
